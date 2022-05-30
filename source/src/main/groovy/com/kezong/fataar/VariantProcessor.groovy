@@ -264,6 +264,8 @@ class VariantProcessor {
         if (artifacts == null) {
             return
         }
+        def enableDebugHack = mVariant.name.contains("debug")
+
         for (final ResolvedArtifact artifact in artifacts) {
             if (FatAarPlugin.ARTIFACT_TYPE_JAR == artifact.type) {
                 addJarFile(artifact.file)
@@ -287,9 +289,11 @@ class VariantProcessor {
                 zipFolder.mkdirs()
                 def group = artifact.getModuleVersion().id.group.capitalize()
                 def name = artifact.name.capitalize()
+                def filePath = mProject.file(enableDebugHack ? artifact.file.path.replace("release", "debug") : artifact.file.path).absolutePath
+                println("Artifact: " + filePath)
                 String taskName = "explode${group}${name}${mVariant.name.capitalize()}"
                 Task explodeTask = mProject.tasks.create(taskName, Copy) {
-                    from mProject.zipTree(artifact.file.absolutePath)
+                    from mProject.zipTree(filePath)
                     into zipFolder
 
                     doFirst {
@@ -298,11 +302,9 @@ class VariantProcessor {
                     }
                 }
 
-                if (dependencies.size() == 0) {
-                    explodeTask.dependsOn(prepareTask)
-                } else {
-                    explodeTask.dependsOn(dependencies.first())
-                }
+                def requiresTask = (dependencies.size() == 0) ? prepareTask : dependencies.first().with { enableDebugHack ? it.project.tasks.named(it.name.replace("Release", "Debug")) : it }
+                explodeTask.dependsOn(requiresTask)
+
                 Task javacTask = mVersionAdapter.getJavaCompileTask()
                 javacTask.dependsOn(explodeTask)
                 bundleTask.configure {
