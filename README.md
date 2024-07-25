@@ -137,6 +137,9 @@ The following link which version of Gradle is required for each version of the A
 [Plugin version and Required Gradle version](https://developer.android.google.cn/studio/releases/gradle-plugin.html)
 
 ## Version Log
+- [1.4.0](<https://github.com/kezong/fat-aar-android/releases/tag/v1.4.0>)
+  - Support kotlin multiplatform projects
+  - Update gradle version
 - [1.3.8](<https://github.com/kezong/fat-aar-android/releases/tag/v1.3.8>)
   - Fix the issue that plugin cannot be used in jdk 1.8 [#371](https://github.com/kezong/fat-aar-android/issues/371)
 - [1.3.7](<https://github.com/kezong/fat-aar-android/releases/tag/v1.3.7>)
